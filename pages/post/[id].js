@@ -25,7 +25,12 @@ export async function getStaticProps({ params }) {
   const response = await fetch(
     `https://jsonplaceholder.typicode.com/posts/${params.id}`
   );
-  const data = await response.json();
+  // add delay of 1000 ms for test fallback render
+  const data = await new Promise((resolve) =>
+    setTimeout(() => {
+      resolve(response.json());
+    }, 1000)
+  );
 
   if (!data) {
     return {
@@ -44,12 +49,12 @@ export async function getStaticPaths() {
   const response = await fetch("https://jsonplaceholder.typicode.com/posts");
   const posts = await response.json();
 
-  const paths = posts.map((element) => {
-    return {
-      params: { id: `${element.id}` },
-    };
-  });
-  // or const paths = [];
+  // const paths = posts.map((element) => {
+  //   return {
+  //     params: { id: `${element.id}` },
+  //   };
+  // });
+  const paths = [];
   return {
     paths,
     fallback: true, // true or false or 'blocking'
